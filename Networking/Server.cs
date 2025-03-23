@@ -5,6 +5,7 @@
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 
 namespace CS3500.Networking;
 
@@ -14,6 +15,7 @@ namespace CS3500.Networking;
 /// </summary>
 public static class Server
 {
+    private static List<StreamWriter> clients = new();
 
     /// <summary>
     ///   Wait on a TcpListener for new connections. Alert the main program
@@ -26,7 +28,21 @@ public static class Server
     /// <param name="port"> The port (e.g., 11000) to listen on. </param>
     public static void StartServer( Action<NetworkConnection> handleConnect, int port )
     {
-        // TODO: Implement this
-        throw new NotImplementedException();
+        TcpListener listener = new(IPAddress.Any, port);
+        listener.Start();
+
+        while (true) {
+            TcpClient client = listener.AcceptTcpClient();
+            StreamWriter w = new StreamWriter(client.GetStream(), Encoding.UTF8)
+            {
+                AutoFlush = true
+            };
+            lock (clients)
+            {
+                clients.Add(w);
+            }
+            //FIXME
+            new Thread().Start();
+        }
     }
 }

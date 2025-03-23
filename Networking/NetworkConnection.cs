@@ -1,6 +1,7 @@
 ﻿// <copyright file="NetworkConnection.cs" company="UofU-CS3500">
 // Copyright (c) 2024 UofU-CS3500. All rights reserved.
 // </copyright>
+// @author - Michael Pierce and Jenna Dawson
 
 using System.Net.Sockets;
 using System.Text;
@@ -94,11 +95,12 @@ public sealed class NetworkConnection : IDisposable
     /// <param name="message"> The string of characters to send. </param>
     public void Send( string message )
     {
-        // TODO: Implement this
-        throw new NotImplementedException();
+        if (!IsConnected)
+            throw new InvalidOperationException("Not connected to a server.");
+        _writer!.WriteLine(message);
     }
-
-
+    
+    
     /// <summary>
     ///   Read a message from the remote side of the connection.  The message will contain
     ///   all characters up to the first new line. See <see cref="Send"/>.
@@ -108,18 +110,9 @@ public sealed class NetworkConnection : IDisposable
     /// <returns> The contents of the message. </returns>
     public string ReadLine()
     {
-        if (IsConnected)
-        {
-            try
-            {
-                string? message = _reader?.ReadLine();
-                return message;
-            }
-            catch (Exception e)
-            {
-                throw new InvalidOperationException();
-            }
-        }
+        if (!IsConnected)
+            throw new InvalidOperationException("Not connected to a server.");
+        return _reader!.ReadLine() ?? String.Empty;
     }
 
     /// <summary>
@@ -128,8 +121,9 @@ public sealed class NetworkConnection : IDisposable
     /// </summary>
     public void Disconnect( )
     {
-        //TODO: implement this
-        throw new NotImplementedException();
+        _tcpClient.Dispose();
+        _reader = null;
+        _writer = null;
     }
 
     /// <summary>
