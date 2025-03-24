@@ -33,6 +33,7 @@ public static class Server
 
         while (true) {
             TcpClient client = listener.AcceptTcpClient();
+            NetworkConnection connection = new NetworkConnection(client);
             StreamWriter w = new StreamWriter(client.GetStream(), Encoding.UTF8)
             {
                 AutoFlush = true
@@ -41,8 +42,27 @@ public static class Server
             {
                 clients.Add(w);
             }
-            //FIXME
-            new Thread().Start();
+            new Thread(() => handleConnect(connection)).Start();
         }
+    }
+
+    /// <summary>
+    /// This method sends a message to all clients on the server.
+    /// </summary>
+    /// <param name="message">Message to be sent.</param>
+    public static void SendMessageToAllClients(string message)
+    {
+        lock (clients)
+        {
+            foreach (StreamWriter w in clients)
+            {
+                w.WriteLine(message);
+            }
+        }
+    }
+
+    public static void RemoveClient()
+    {
+
     }
 }

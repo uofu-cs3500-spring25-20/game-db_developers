@@ -34,19 +34,25 @@ public partial class ChatServer
     ///
     private static void HandleConnect( NetworkConnection connection )
     {
+        var name = "User"; // Default name
         // handle all messages until disconnect.
         try
         {
+            connection.Send("Please type your name: ");
+            name = connection.ReadLine();
+            Server.SendMessageToAllClients(name + " has connected to the server!");
             while ( true )
             {
                 var message = connection.ReadLine( );
-
-                connection.Send( "thanks!" );
+                Server.SendMessageToAllClients(name + ": " + message);
             }
         }
         catch ( Exception )
         {
-            // do anything necessary to handle a disconnected client in here
+            connection.Disconnect();
+            Server.SendMessageToAllClients(name + " has disconnected.");
         }
     }
+
+    
 }
