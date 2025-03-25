@@ -122,14 +122,16 @@
                     }
                     catch
                     {
-                        // add anything needed here to handle a disconnection from the server
+                        // Disconnection from the server
+                        AllMessages.Insert(0, "Disconnected from server.");
                     }
                 }
             } ).Start();
         }
         catch
         {
-            // add anything needed here to handle a failure to connect
+            // Failure to connect
+            AllMessages.Insert(0, "Could not connect to server.");
         }
 
     }

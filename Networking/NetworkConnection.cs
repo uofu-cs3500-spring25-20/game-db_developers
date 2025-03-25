@@ -122,8 +122,8 @@ public sealed class NetworkConnection : IDisposable
     public void Disconnect( )
     {
         _tcpClient.Dispose();
-        _reader = null;
-        _writer = null;
+        _reader!.Dispose();
+        _writer!.Dispose();
     }
 
     /// <summary>

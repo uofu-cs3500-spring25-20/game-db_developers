@@ -15,8 +15,6 @@ namespace CS3500.Networking;
 /// </summary>
 public static class Server
 {
-    private static List<StreamWriter> clients = new();
-
     /// <summary>
     ///   Wait on a TcpListener for new connections. Alert the main program
     ///   via a callback (delegate) mechanism.
@@ -34,35 +32,7 @@ public static class Server
         while (true) {
             TcpClient client = listener.AcceptTcpClient();
             NetworkConnection connection = new NetworkConnection(client);
-            StreamWriter w = new StreamWriter(client.GetStream(), Encoding.UTF8)
-            {
-                AutoFlush = true
-            };
-            lock (clients)
-            {
-                clients.Add(w);
-            }
             new Thread(() => handleConnect(connection)).Start();
         }
-    }
-
-    /// <summary>
-    /// This method sends a message to all clients on the server.
-    /// </summary>
-    /// <param name="message">Message to be sent.</param>
-    public static void SendMessageToAllClients(string message)
-    {
-        lock (clients)
-        {
-            foreach (StreamWriter w in clients)
-            {
-                w.WriteLine(message);
-            }
-        }
-    }
-
-    public static void RemoveClient()
-    {
-
     }
 }
